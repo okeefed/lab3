@@ -43,6 +43,7 @@ NgramList::~NgramList()
    while (first != NULL)
    {
       nextNgram = first->next;
+      delete first;
       first = nextNgram;
    }
 }
@@ -121,13 +122,15 @@ void NgramList::insertNgram(std::string s)
       if (ptr->ngram == s) 
       {
          ptr->count++;
+         delete newNode;
          return;
       }
       ptr = ptr->next;
    }
+   delete ptr;
    //insert in front of list
    newNode->next = first;
-   first = newNode;
+   first = newNode;  
 }
 
 
