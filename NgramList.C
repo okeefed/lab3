@@ -127,9 +127,10 @@ void NgramList::insertNgram(std::string s)
       }
       ptr = ptr->next;
    }
+   delete ptr;
    //insert in front of list
    newNode->next = first;
-   first = newNode;
+   first = newNode;  
 }
 
 /* 
