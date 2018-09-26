@@ -21,6 +21,10 @@ class NgramList
       NgramList(int ngramSz, const WordList & wl);
       ~NgramList();
       void sortByCount();
+      Ngram_t * quickSortByCount(Ngram_t *, Ngram_t *);
+      void quickSortMain();
+      Ngram_t * partition(Ngram_t *, Ngram_t *, Ngram_t **, Ngram_t **);
+      Ngram_t * lastNode(Ngram_t *); 
       friend std::ostream& operator<<(std::ostream& os, const NgramList & nl);
 };
 

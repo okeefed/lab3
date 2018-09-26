@@ -43,6 +43,7 @@ NgramList::~NgramList()
    while (first != NULL)
    {
       nextNgram = first->next;
+      delete first;
       first = nextNgram;
    }
 }
@@ -121,6 +122,7 @@ void NgramList::insertNgram(std::string s)
       if (ptr->ngram == s) 
       {
          ptr->count++;
+         delete newNode;
          return;
       }
       ptr = ptr->next;
@@ -130,6 +132,104 @@ void NgramList::insertNgram(std::string s)
    first = newNode;
 }
 
+/* 
+ * lastNode
+ *
+ * finds the last node in a linked list and returns it
+ *
+ * param: the root of the linked list
+ * return: the last node in the linked list
+ *
+ */
+NgramList::Ngram_t * NgramList::lastNode(Ngram_t *root)
+{
+    while (root != NULL  && root->next != NULL)
+        root = root -> next;
+    return root;
+}
+
+/*
+ * partition
+ *
+ * performs a partition on a linked list
+ *
+ */
+NgramList::Ngram_t * NgramList::partition(Ngram_t * head, Ngram_t * end, 
+                            Ngram_t ** newHead, Ngram_t ** newEnd)
+{
+   Ngram_t * pivot = end;
+   Ngram_t * prev = NULL, * cur = head, * tail = pivot;
+    
+   while(cur != pivot) 
+   {
+       if (cur->count < pivot->count)
+       {
+           if(*newHead == NULL)
+               (*newHead) = cur;
+           prev = cur;
+           cur = cur->next;
+       }
+       else 
+       {
+           if(prev)
+               prev->next = cur->next;
+           Ngram_t * tmp = cur->next;
+           cur->next = NULL;
+           tail->next = cur;
+           tail = cur; 
+           cur = tmp;
+       }
+   }
+
+   if ((*newHead) == NULL) 
+       (*newHead) = pivot;
+
+   (*newEnd) = tail;
+
+   return pivot;
+    
+}
+
+void NgramList::quickSortMain()
+{
+    Ngram_t * last = lastNode(first);
+    quickSortByCount(first, last);
+}
+/*
+ * quickSortByCount
+ *
+ * performs a quickSort on the linked list of ngrams, sorting the 
+ * nodes in the list by the count
+ *
+ * param: none
+ * return: none (modified private linked list)
+ */
+NgramList::Ngram_t * NgramList::quickSortByCount(Ngram_t * head, Ngram_t * last)
+{
+    if (!head || head == last) return head;
+    
+    Ngram_t *newHead = NULL, *newLast = NULL;
+
+    Ngram_t *pivot = partition(head, last, &newHead, &newLast);
+
+    if(newHead != pivot) 
+    {
+        Ngram_t * tmp = newHead;
+        while (tmp->next != pivot)
+            tmp = tmp->next;
+        tmp->next = NULL;
+
+        newHead = quickSortByCount(newHead, tmp);
+
+        tmp = lastNode(newHead);
+        tmp->next = NULL;
+    }
+    
+    pivot->next = quickSortByCount(pivot->next, newLast);
+
+    return newHead;
+
+}
 
 /*
  * sortByCount
