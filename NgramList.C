@@ -133,6 +133,8 @@ void NgramList::insertNgram(std::string s)
    first = newNode;  
 }
 
+
+
 /* 
  * lastNode
  *
@@ -142,95 +144,96 @@ void NgramList::insertNgram(std::string s)
  * return: the last node in the linked list
  *
  */
-NgramList::Ngram_t * NgramList::lastNode(Ngram_t *root)
+NgramList::Ngram_t * NgramList::Merge(Ngram_t *head1, Ngram_t *head2)
 {
-    while (root != NULL  && root->next != NULL)
-        root = root -> next;
-    return root;
-}
+    Ngram_t *t1 = new Ngram_t();
+    Ngram_t *t2 = new Ngram_t();
+    Ngram_t *tmp = new Ngram_t();
 
-/*
- * partition
- *
- * performs a partition on a linked list
- *
- */
-NgramList::Ngram_t * NgramList::partition(Ngram_t * head, Ngram_t * end, 
-                            Ngram_t ** newHead, Ngram_t ** newEnd)
-{
-   Ngram_t * pivot = end;
-   Ngram_t * prev = NULL, * cur = head, * tail = pivot;
-    
-   while(cur != pivot) 
-   {
-       if (cur->count < pivot->count)
-       {
-           if(*newHead == NULL)
-               (*newHead) = cur;
-           prev = cur;
-           cur = cur->next;
-       }
-       else 
-       {
-           if(prev)
-               prev->next = cur->next;
-           Ngram_t * tmp = cur->next;
-           cur->next = NULL;
-           tail->next = cur;
-           tail = cur; 
-           cur = tmp;
-       }
-   }
-
-   if ((*newHead) == NULL) 
-       (*newHead) = pivot;
-
-   (*newEnd) = tail;
-
-   return pivot;
-    
-}
-
-void NgramList::quickSortMain()
-{
-    Ngram_t * last = lastNode(first);
-    quickSortByCount(first, last);
-}
-/*
- * quickSortByCount
- *
- * performs a quickSort on the linked list of ngrams, sorting the 
- * nodes in the list by the count
- *
- * param: none
- * return: none (modified private linked list)
- */
-NgramList::Ngram_t * NgramList::quickSortByCount(Ngram_t * head, Ngram_t * last)
-{
-    if (!head || head == last) return head;
-    
-    Ngram_t *newHead = NULL, *newLast = NULL;
-
-    Ngram_t *pivot = partition(head, last, &newHead, &newLast);
-
-    if(newHead != pivot) 
+    if(head1 == NULL)
     {
-        Ngram_t * tmp = newHead;
-        while (tmp->next != pivot)
-            tmp = tmp->next;
-        tmp->next = NULL;
-
-        newHead = quickSortByCount(newHead, tmp);
-
-        tmp = lastNode(newHead);
-        tmp->next = NULL;
+        return head2;
     }
-    
-    pivot->next = quickSortByCount(pivot->next, newLast);
+    if(head2 == NULL)
+    {
+        return head1;
+    }
+    t1 = head1;
 
-    return newHead;
+    while(head2 != NULL)
+    {
+        t2 = head2;
+        head2 = head2->next;
+        t2->next = NULL;
+
+        if(head1->count < t2->count)
+        {
+            t2->next = head1;
+            head1 = t2;
+            t1 = head1;
+            continue;
+        }
+        flag:
+        if(t1->next == NULL)
+        {
+            t1->next = t2;
+            t1 = t1->next;
+        }
+        else if((t1->next)->count >= t2->count)
+        {
+            t1 = t1->next;
+            goto flag;
+        }
+        else
+        {
+            tmp = t1->next;
+            t1->next = t2;
+            t2->next = tmp;
+        }
+    }
+    return head1;
+}
+
+void NgramList::MergeSort(Ngram_t ** head)
+{
+    Ngram_t *one = new Ngram_t();
+    Ngram_t *two = new Ngram_t();
+    Ngram_t *tmp = new Ngram_t();
+    one = *head;
+    tmp = *head;
+
+    if (one  == NULL || one->next == NULL)
+    {
+        return;
+    }
+    else
+    {
+        while(one->next != NULL)
+        {
+            one = one->next;
+            if(one->next != NULL)
+            {
+                tmp = tmp->next;
+                one = one->next;
+            }
+        }
+        two = tmp->next;
+        tmp->next = NULL;
+        one = *head;
+    }
+
+    MergeSort(&one);
+    MergeSort(&two);
+
+    *head = Merge(one, two);
 
 }
+
+void NgramList::MergeSortMain()
+{
+    MergeSort(&first);
+}
+
 
 /*
  * sortByCount

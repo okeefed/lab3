@@ -61,8 +61,8 @@ int main(int argc, char * argv[])
    }
 
    NgramList nglst(ngrams, wl);
-   nglst.quickSortMain();
-   //nglst.sortByCount();
+   nglst.MergeSortMain();
+   //nglst.quickSortMain();
    cout << nglst;
    
   

@@ -20,11 +20,10 @@ class NgramList
    public:
       NgramList(int ngramSz, const WordList & wl);
       ~NgramList();
+      void MergeSort(Ngram_t ** head);
+      Ngram_t * Merge(Ngram_t *head1, Ngram_t *head2);
+      void MergeSortMain();
       void sortByCount();
-      Ngram_t * quickSortByCount(Ngram_t *, Ngram_t *);
-      void quickSortMain();
-      Ngram_t * partition(Ngram_t *, Ngram_t *, Ngram_t **, Ngram_t **);
-      Ngram_t * lastNode(Ngram_t *); 
       friend std::ostream& operator<<(std::ostream& os, const NgramList & nl);
 };
 
